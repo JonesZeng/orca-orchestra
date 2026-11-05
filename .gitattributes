@@ -1,0 +1,5 @@
+# The published bytes are the package: never normalize line endings, so a checkout
+# hashes and zips the same on every platform.
+* -text
+
+*.png binary

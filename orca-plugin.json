@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stablyai/orca/main/docs/schemas/plugins/orca-plugin.v2.schema.json",
+  "manifestVersion": 2,
+  "execution": "trusted-worker",
+  "id": "orchestra",
+  "name": "Orchestra",
+  "version": "0.2.0",
+  "description": "See and steer Orca orchestration runs on this computer or a saved server: a live task DAG, workers and decisions, with every write previewed before it is sent.",
+  "license": "MIT",
+  "author": {
+    "name": "JonesZeng",
+    "url": "https://github.com/JonesZeng"
+  },
+  "repository": "https://github.com/JonesZeng/orca-orchestra",
+  "homepage": "https://github.com/JonesZeng/orca-orchestra",
+  "icon": "assets/icon.png",
+  "cover": {
+    "path": "assets/cover.png",
+    "alt": "Orchestra: a framed view of the live task DAG on a calm neutral background"
+  },
+  "screenshots": [
+    {
+      "path": "assets/screenshots/01-live-dag-light.png",
+      "alt": "The Orchestra panel in the Orca light theme, showing a run's live task DAG, six tasks and one pending decision",
+      "caption": "Live DAG, dependencies and task state, refreshed every three seconds",
+      "theme": "light"
+    },
+    {
+      "path": "assets/screenshots/02-live-dag-dark.png",
+      "alt": "The same Orchestra run in the Orca dark theme",
+      "caption": "The same run in the dark theme",
+      "theme": "dark"
+    },
+    {
+      "path": "assets/screenshots/03-remote-server.png",
+      "alt": "The Orchestra panel with the Host selector set to a saved remote server",
+      "caption": "Switch the Host selector to any saved Orca server"
+    },
+    {
+      "path": "assets/screenshots/04-preview.png",
+      "alt": "A confirm dialog previewing a new task, with its exact target and parameters",
+      "caption": "Every write is previewed with its exact target before it is sent"
+    },
+    {
+      "path": "assets/screenshots/05-tasks-board.png",
+      "alt": "The task board, with columns for waiting on dependencies, ready, in progress and finished tasks, plus dependency links and the dispatch terminal",
+      "caption": "Tasks, dependencies and dispatches in one board"
+    }
+  ],
+  "engines": {
+    "orca": ">=1.4.246"
+  },
+  "pluginApi": 1,
+  "main": "worker/main.mjs",
+  "contributes": {
+    "panels": [
+      {
+        "id": "orchestra",
+        "title": "Orchestra",
+        "icon": "layers",
+        "entry": "panel.html"
+      }
+    ]
+  }
+}
