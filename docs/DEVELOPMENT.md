@@ -6,9 +6,11 @@ The published repository is the built release folder, not the Orca checkout. Its
 ## Source and output
 
 - Source template: `examples/plugins/orchestra` in the Orca checkout (manifest, worker, docs,
-  assets; no `panel.html`).
+  assets, and `source/`; no `panel.html`).
 - Build entry: `config/scripts/orchestra-plugin/build.mjs`.
 - `panel.html` and `worker/orchestra-remote.cjs` are generated. Everything else is copied.
+- Both bundles are built unminified and deterministic. The listing policy allows bundled output
+  when its source is in the repository; `source/` makes the bundles reproducible and reviewable.
 
 ## Build
 
@@ -22,13 +24,13 @@ node config/scripts/orchestra-plugin/build.mjs
 
 Outputs, relative to the checkout:
 
-- `out/plugins/orchestra/` — installable folder
-- `out/plugins/orchestra-0.2.0.zip` — deterministic archive, package files at its root
-- `out/plugins/orchestra-0.2.0.zip.sha256` — `sha256sum -c` compatible
+- `out/plugins/orchestra/` — installable folder, plus `source/`
+- `out/plugins/orchestra-0.2.1.zip` — deterministic archive, package files at its root
+- `out/plugins/orchestra-0.2.1.zip.sha256` — `sha256sum -c` compatible
 
 Choose another output folder with `--out <folder>`. The build replaces only the entries it owns
-(`orca-plugin.json`, `panel.html`, `worker/`, `assets/`, `docs/`, both READMEs, `LICENSE`,
-`THIRD_PARTY_NOTICES.md`) and leaves `.git` and unrelated files alone:
+(`orca-plugin.json`, `panel.html`, `worker/`, `assets/`, `docs/`, `source/`, both READMEs,
+`LICENSE`, `THIRD_PARTY_NOTICES.md`) and leaves `.git` and unrelated files alone:
 
 ```sh
 node config/scripts/orchestra-plugin/build.mjs --out ../orca-orchestra
@@ -42,7 +44,7 @@ before replacing anything, and rolls back the previous owned files if a replacem
 
 ```
 orca-plugin.json                 manifest (trusted-worker, one panel, worker/main.mjs)
-panel.html                       self-contained Orchestra panel (~1.4 MiB with the inline font)
+panel.html                       self-contained Orchestra panel (~2.3 MiB, unminified, inline font)
 worker/main.mjs                  plugin.request handlers (orchestra.call, orchestra.targets)
 worker/orchestra-gateway.mjs     method and target allowlist, bounded answers
 worker/remote-targets.mjs        saved-server listing and remote request routing
@@ -51,10 +53,15 @@ worker/runtime-endpoint.mjs      locates the local Orca runtime for this profile
 worker/runtime-request.mjs       minimal local runtime RPC client
 assets/                          icon, cover, screenshots declared by the manifest
 docs/                            this file and SECURITY.md
+source/                          reproducible build of both generated bundles (repository only)
 README.md, README.zh-CN.md       the repository README in English and Simplified Chinese
 LICENSE                          MIT
 THIRD_PARTY_NOTICES.md           bundled UI, font and worker-bundle licenses
 ```
+
+`source/` is copied into the folder after the zip is written, so it ships in the repository but
+never inside `orca-plugin-0.2.1.zip`; an install from a Git URL still clones it and counts it
+toward Orca's 2,000-file / 50 MiB limits (about 40 files and 400 KiB).
 
 `docs/` and `README.zh-CN.md` ship with the plugin because the installed README links to them;
 keeping the links valid in the package costs a few kilobytes and makes the offline copy complete.
@@ -62,22 +69,31 @@ They are documentation only and are never read at runtime.
 
 ## Reproducibility
 
-The panel bundle depends on the checkout's renderer sources, lockfile and Vite plugins. Rebuilding
-the same checkout with the same installed dependencies produces the same bundle.
-`worker/orchestra-remote.cjs` is built by esbuild from
-`config/scripts/orchestra-plugin/remote-entry.ts`, which re-exports Orca's own
-`src/shared/remote-runtime` client, paired connection and environments store; it is deterministic,
-contains no native modules, and bundles only `ws`, `tweetnacl`, `zod` and Node built-ins. The zip
-is deterministic (sorted entries, fixed 1980-01-01 mtime, fixed mode), so its sha256 changes only
-when package bytes change.
+`source/` pins the upstream Orca commit in `source/UPSTREAM` and holds `source/overlay/`: exactly
+the build-input files that this branch adds or changes (the panel components, the remote-client
+entry, the build tooling and the zh strings the panel renders), at their Orca paths. Every other
+input is upstream Orca at that commit; third-party code comes from its frozen lockfile.
+
+```sh
+./source/build.sh
+```
+
+The script clones the pinned commit, copies `overlay/` on top, copies this repository's package
+files into `examples/plugins/orchestra`, installs from the frozen lockfile, builds, prints the
+sha256 of both bundles and exits non-zero unless they match the shipped bytes. It needs only git,
+Node 24 and pnpm 12.14; see [`source/README.md`](../source/README.md).
+
+The bundles are deterministic: Vite/Rollup and esbuild emit in input order with no timestamps or
+absolute paths, and minification is off. The zip is deterministic too (sorted entries, fixed
+1980-01-01 mtime, fixed mode), so its sha256 changes only when package bytes change.
 
 ## Validation
 
 ```sh
 pnpm test config/scripts/orchestra-plugin src/renderer/src/components/orchestra/plugin-frame
 pnpm tc:web
-orca plugin validate path/to/orchestra-0.2.0
-orca plugin inspect path/to/orchestra-0.2.0
+orca plugin validate path/to/orchestra-0.2.1
+orca plugin inspect path/to/orchestra-0.2.1
 ```
 
 `validate` is offline, never runs plugin code and never grants approval. It exits 0 when valid,
@@ -93,10 +109,10 @@ owner, replace `.` and `_` with `-`, collapse repeated dashes and trim them. `Jo
 **`joneszeng.orchestra`**. The manifest deliberately has no `publisher` field.
 
 1. Bump `version` in `orca-plugin.json` (semver), then rebuild. The zip name follows it.
-2. Commit the package as the repository root, including `worker/`, `assets/`, `docs/` and both
-   READMEs, and tag the release (`v0.2.0`).
-3. Create a release and attach `orchestra-0.2.0.zip` and `orchestra-0.2.0.zip.sha256`. Users
-   install with `https://github.com/JonesZeng/orca-orchestra.git#v0.2.0` or verify and unzip.
+2. Commit the package as the repository root, including `worker/`, `assets/`, `docs/`,
+   `source/` and both READMEs, and tag the release (`v0.2.1`).
+3. Create a release and attach `orchestra-0.2.1.zip` and `orchestra-0.2.1.zip.sha256`. Users
+   install with `https://github.com/JonesZeng/orca-orchestra.git#v0.2.1` or verify and unzip.
 4. Optional catalog: a Git repository with `orca-catalog.json` at its root, added under
    **Settings → Plugins → ⋯ → Catalog sources…**. Run `orca plugin release-entry path/to/plugin`
    on the committed plugin to print the exact entry. Keep older releases listed when raising
@@ -113,7 +129,7 @@ owner, replace `.` and `_` with `-`, collapse repeated dashes and trim them. `Jo
   "categories": ["productivity"],
   "releases": [
     {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "commit": "<full 40-character commit SHA>",
       "contentHash": "<content hash printed by release-entry>",
       "execution": "trusted-worker",
@@ -129,6 +145,7 @@ owner, replace `.` and `_` with `-`, collapse repeated dashes and trim them. `Jo
 ## Release checklist
 
 - [ ] Version bumped; README badge and zip name agree.
+- [ ] `source/build.sh` reproduces `panel.html` and `worker/orchestra-remote.cjs` byte for byte.
 - [ ] `pnpm test …`, `pnpm tc:web`, `oxlint` and `oxfmt` clean on changed files.
 - [ ] `orca plugin validate` and `orca plugin inspect` exit 0 on the folder **and** the extracted
       zip, on both the oldest supported host (1.4.246) and a current build.

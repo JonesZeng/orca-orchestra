@@ -1,0 +1,48 @@
+.orchestra-dag-canvas {
+  background-color: var(--background);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.orchestra-dag-edge {
+  opacity: 0.7;
+}
+
+.orchestra-dag-unresolved {
+  stroke-dasharray: 3 6;
+}
+
+.orchestra-dag-flow {
+  stroke-dasharray: 7 9;
+  animation: orchestra-dag-progress 1.3s linear infinite;
+  opacity: 1;
+}
+
+@keyframes orchestra-dag-progress {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orchestra-dag-flow {
+    animation: none;
+  }
+}
+
+.orchestra-dag-node-active {
+  box-shadow: 0 0 0 1px var(--ring);
+  animation: orchestra-dag-node-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes orchestra-dag-node-pulse {
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--ring) 35%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orchestra-dag-node-active {
+    animation: none;
+  }
+}

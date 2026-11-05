@@ -2,7 +2,7 @@
 
 **See and steer every Orca orchestration run — from one quiet panel.**
 
-[![Version](https://img.shields.io/badge/version-0.2.0-59636e?style=flat-square)](https://github.com/JonesZeng/orca-orchestra/releases)
+[![Version](https://img.shields.io/badge/version-0.2.1-59636e?style=flat-square)](https://github.com/JonesZeng/orca-orchestra/releases)
 [![License](https://img.shields.io/badge/license-MIT-59636e?style=flat-square)](LICENSE)
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.246-59636e?style=flat-square)](https://github.com/stablyai/orca)
 
@@ -19,11 +19,11 @@ receipt.
 
 1. Open **Settings → Plugins** and turn plugins on if they are off.
 2. Choose **Add plugin → From a Git URL…** and enter
-   `https://github.com/JonesZeng/orca-orchestra.git#v0.2.0`.
+   `https://github.com/JonesZeng/orca-orchestra.git#v0.2.1`.
 3. Review the **trusted-worker** access, approve it, then open **Orchestra** in the right sidebar.
 
 Orca names this install `joneszeng.orchestra`. To install offline, download
-`orchestra-0.2.0.zip` from the releases page, verify its `.sha256`, extract it, and use
+`orchestra-0.2.1.zip` from the releases page, verify its `.sha256`, extract it, and use
 **Add plugin → From a folder…** on the folder that directly contains `orca-plugin.json`.
 
 ## What you get
@@ -74,6 +74,7 @@ Tunnel-backed servers work while Orca keeps their tunnel open.
 
 The repository root is the release folder. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the
 build, the package contents, reproducibility, publishing and the release checklist.
+[`source/`](source/README.md) rebuilds both bundles, byte for byte, from the pinned Orca commit.
 
 ## License
 
