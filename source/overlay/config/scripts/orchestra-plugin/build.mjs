@@ -45,18 +45,6 @@ const WORK = path.join(ROOT, 'out/plugins/.orchestra-build')
 const REMOTE_ENTRY = path.join(ROOT, 'config/scripts/orchestra-plugin/remote-entry.ts')
 const REMOTE_OUT = path.join(WORK, 'orchestra-remote.cjs')
 const REMOTE_PACKAGE_FILE = 'orchestra-remote.cjs'
-const OWNED = [
-  'orca-plugin.json',
-  'panel.html',
-  'worker',
-  'assets',
-  'docs',
-  'source',
-  'README.md',
-  'README.zh-CN.md',
-  'LICENSE',
-  'THIRD_PARTY_NOTICES.md'
-]
 const LOCALE_URL_STUB = '\0orchestra-plugin-locale-url'
 
 const { values } = parseArgs({ options: { out: { type: 'string' } } })
@@ -253,7 +241,9 @@ async function main() {
     })
     // After the zip: Orca counts every file a Git install copies toward its install limits.
     copySource(staging)
-    installOwnedEntries({ stagedDir: staging, outDir: OUT, ownedNames: OWNED })
+    // The staging folder is private and holds exactly the entries this build owns.
+    const ownedNames = readdirSync(staging)
+    installOwnedEntries({ stagedDir: staging, outDir: OUT, ownedNames })
     publishPluginArchive({ stagedArchive, stagedChecksum, archivePath, checksumPath })
     const size = (
       Buffer.byteLength(readFileSync(path.join(OUT, 'panel.html'))) /

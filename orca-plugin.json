@@ -4,7 +4,7 @@
   "execution": "trusted-worker",
   "id": "orchestra",
   "name": "Orchestra",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "See and steer Orca orchestration runs on this computer or a saved server: a live task DAG, workers and decisions, with every write previewed before it is sent.",
   "license": "MIT",
   "author": {

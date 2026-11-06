@@ -17,5 +17,9 @@ exits non-zero unless they are byte-identical to the shipped files. `--keep` kee
 `--release <folder>` checks another release folder; `ORCA_UPSTREAM_URL` clones from a mirror (the
 pinned commit check still applies). It needs git, Node 24 and pnpm 12.14.
 
-`source/` is published in this repository but not in `orca-plugin-<version>.zip`: the zip is the
+From the published repository, this script is the build path. The
+`node config/scripts/orchestra-plugin/build.mjs` entry is for a prepared Orca checkout that
+already contains the panel sources.
+
+`source/` is published in this repository but not in `orchestra-<version>.zip`: the zip is the
 package Orca installs, and it is written before `source/` is copied into the output folder.

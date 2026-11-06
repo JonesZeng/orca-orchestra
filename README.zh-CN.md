@@ -2,7 +2,7 @@
 
 **在一个安静的面板里，看清并掌控每一个 Orca 编排运行。**
 
-[![Version](https://img.shields.io/badge/version-0.2.1-59636e?style=flat-square)](https://github.com/JonesZeng/orca-orchestra/releases)
+[![Version](https://img.shields.io/badge/version-0.2.2-59636e?style=flat-square)](https://github.com/JonesZeng/orca-orchestra/releases)
 [![License](https://img.shields.io/badge/license-MIT-59636e?style=flat-square)](LICENSE)
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.246-59636e?style=flat-square)](https://github.com/stablyai/orca)
 
@@ -18,11 +18,11 @@ Orchestra 把整个协作过程放在一处：任务图、每一次运行与任�
 
 1. 打开 **设置 → 插件**，如插件尚未开启请先开启。
 2. 选择 **添加插件 → 从 Git URL…**，输入
-   `https://github.com/JonesZeng/orca-orchestra.git#v0.2.1`。
+   `https://github.com/JonesZeng/orca-orchestra.git#v0.2.2`。
 3. 审阅 **trusted-worker** 权限，批准后从右侧边栏打开 **Orchestra**。
 
 Orca 会将此次安装命名为 `joneszeng.orchestra`。离线安装：从 Releases 下载
-`orchestra-0.2.1.zip`，校验 `.sha256` 后解压，再用 **添加插件 → 从文件夹…** 选择直接包含
+`orchestra-0.2.2.zip`，校验 `.sha256` 后解压，再用 **添加插件 → 从文件夹…** 选择直接包含
 `orca-plugin.json` 的那一层文件夹。
 
 ## 你能得到什么

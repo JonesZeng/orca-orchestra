@@ -115,10 +115,15 @@ export function assertPackageLayout(rootDir) {
     }
   }
   const html = readFileSync(path.join(rootDir, 'panel.html'), 'utf8')
-  // Why no `i` flag: unminified JavaScript contains `new URL("https:…")`, which is not a fetch.
-  for (const pattern of [/<script[^>]+\bsrc=/i, /<link[^>]+\bhref=/i, /url\(\s*['"]?https?:/]) {
+  for (const pattern of [/<script[^>]+\bsrc=/i, /<link[^>]+\bhref=/i]) {
     if (pattern.test(html)) {
       throw new Error(`panel.html is not self-contained: it references ${pattern}`)
+    }
+  }
+  // CSS only: unminified JavaScript may legitimately construct `new URL("https:…")`.
+  for (const style of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) {
+    if (/url\s*\(\s*['"]?\s*https?:/i.test(style[1])) {
+      throw new Error('panel.html is not self-contained: CSS references a network URL')
     }
   }
   const manifest = JSON.parse(readFileSync(path.join(rootDir, 'orca-plugin.json'), 'utf8'))
@@ -163,18 +168,13 @@ export function createPluginZip({ sourceDir, archivePath }) {
   }
   const files = {}
   for (const relative of collectFiles(sourceDir)) {
-    files[relative] = new Uint8Array(readFileSync(path.join(sourceDir, relative)))
+    files[relative] = readFileSync(path.join(sourceDir, relative))
   }
   const archive = zipSync(files, { level: 9, mtime: ZIP_MTIME, os: 0 })
   const sha256 = createHash('sha256').update(archive).digest('hex')
   mkdirSync(path.dirname(archivePath), { recursive: true })
-  const temporary = `${archivePath}.${process.pid}.tmp`
-  try {
-    writeFileSync(temporary, archive)
-    renameSync(temporary, archivePath)
-  } finally {
-    rmSync(temporary, { force: true })
-  }
+  // Callers pass private staged paths and publish by rename after the folder install succeeds.
+  writeFileSync(archivePath, archive)
   return { archivePath, sha256, bytes: archive.length }
 }
 
@@ -184,13 +184,7 @@ export function writePluginChecksum({ checksumPath, archiveName, sha256 }) {
     throw new Error(`invalid archive checksum ${sha256}`)
   }
   mkdirSync(path.dirname(checksumPath), { recursive: true })
-  const temporary = `${checksumPath}.${process.pid}.tmp`
-  try {
-    writeFileSync(temporary, `${sha256}  ${archiveName}\n`)
-    renameSync(temporary, checksumPath)
-  } finally {
-    rmSync(temporary, { force: true })
-  }
+  writeFileSync(checksumPath, `${sha256}  ${archiveName}\n`)
   return checksumPath
 }
 
