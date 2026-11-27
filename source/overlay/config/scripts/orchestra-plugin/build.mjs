@@ -50,12 +50,19 @@ const LOCALE_URL_STUB = '\0orchestra-plugin-locale-url'
 const { values } = parseArgs({ options: { out: { type: 'string' } } })
 const OUT = path.resolve(values.out ?? path.join(ROOT, 'out/plugins/orchestra'))
 
-/** The zh strings the bundled components render; other languages read the inline English. */
+/** The zh strings the bundled components render. */
 function zhCatalog() {
   // Plugin-owned copy: the panel bundles only these strings, and the source/ overlay can carry
   // them without publishing unrelated work-in-progress translations from the host catalog.
   return JSON.parse(
     readFileSync(path.join(ROOT, 'config/scripts/orchestra-plugin/orchestra-zh.json'), 'utf8')
+  )
+}
+
+/** Russian strings are embedded too: plugin panels cannot fetch locale files. */
+function ruCatalog() {
+  return JSON.parse(
+    readFileSync(path.join(ROOT, 'config/scripts/orchestra-plugin/orchestra-ru.json'), 'utf8')
   )
 }
 
@@ -107,6 +114,7 @@ async function bundlePanel() {
     define: {
       'process.env.NODE_ENV': JSON.stringify('production'),
       __ORCHESTRA_PLUGIN_ZH__: JSON.stringify(zhCatalog()),
+      __ORCHESTRA_PLUGIN_RU__: JSON.stringify(ruCatalog()),
       ORCA_FEATURE_WALL_ENABLED: 'true',
       ORCA_BUILD_COMMIT: JSON.stringify('orchestra-plugin')
     },
@@ -133,10 +141,11 @@ async function bundlePanel() {
   })
   const script = readFileSync(path.join(WORK, 'panel.js'), 'utf8')
   // Keep only the UI font; symbol, terminal and math fonts add megabytes the panel never draws.
-  const style = readFileSync(path.join(WORK, 'panel.css'), 'utf8').replace(
-    /@font-face\s*\{[^}]*\}/g,
-    (rule) => (/font-family:\s*["']?Geist["']?;/.test(rule) ? rule : '')
-  )
+  const style = readFileSync(path.join(WORK, 'panel.css'), 'utf8')
+    .replace(/\r\n/g, '\n')
+    .replace(/@font-face\s*\{[^}]*\}/g, (rule) =>
+      /font-family:\s*["']?Geist["']?;/.test(rule) ? rule : ''
+    )
   return {
     script: script.replace(/<\/script/gi, '<\\/script'),
     style: style.replace(/<\/style/gi, '<\\/style')
