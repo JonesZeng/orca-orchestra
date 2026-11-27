@@ -3,7 +3,7 @@
 `panel.html` and `worker/orchestra-remote.cjs` are bundled from
 [Orca](https://github.com/stablyai/orca) at the commit pinned in [UPSTREAM](UPSTREAM), plus the
 files in [overlay/](overlay/). The overlay holds only the plugin's own sources (at their Orca
-paths), the build tooling and the zh strings the panel renders. Every other input is upstream
+paths), the build tooling and the zh/ru strings the panel renders. Every other input is upstream
 Orca at that commit; dependencies come from its frozen lockfile.
 
 ```sh
@@ -23,3 +23,11 @@ already contains the panel sources.
 
 `source/` is published in this repository but not in `orchestra-<version>.zip`: the zip is the
 package Orca installs, and it is written before `source/` is copied into the output folder.
+
+## Localization checks
+
+The locale-selection and interpolation checks need no build dependencies:
+
+```sh
+node --test source/russian-localization.test.mjs
+```

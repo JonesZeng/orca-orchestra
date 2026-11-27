@@ -2,6 +2,7 @@ import { i18n } from '@/i18n/i18n'
 
 /** Injected by config/scripts/orchestra-plugin/build.mjs: the zh strings this panel renders. */
 declare const __ORCHESTRA_PLUGIN_ZH__: Record<string, unknown> | undefined
+declare const __ORCHESTRA_PLUGIN_RU__: Record<string, unknown> | undefined
 
 /** The frame CSS variables Orca keeps in sync with its active theme (plugin-theme-tokens.md). */
 const ORCA_FRAME_TOKENS = [
@@ -39,8 +40,9 @@ export function followOrcaFrameTheme(root: HTMLElement = document.documentElemen
   }
 }
 
-/** Orchestra ships English and Simplified Chinese; Traditional Chinese reads the English source. */
-export function orchestraPluginLanguage(locale: string): 'zh' | 'en' {
+/** Match the host language; unsupported locales keep the inline English fallback. */
+export function orchestraPluginLanguage(locale: string): 'zh' | 'ru' | 'en' {
+  if (/^ru(?:-|$)/i.test(locale)) return 'ru'
   return /^zh(?!-(hant|tw|hk|mo)\b)/i.test(locale) ? 'zh' : 'en'
 }
 
@@ -49,6 +51,10 @@ export async function followOrcaLocale(locale: string): Promise<void> {
   if (language === 'zh' && !i18n.hasResourceBundle('zh', 'translation')) {
     const catalog = typeof __ORCHESTRA_PLUGIN_ZH__ === 'object' ? __ORCHESTRA_PLUGIN_ZH__ : {}
     i18n.addResourceBundle('zh', 'translation', catalog, true, true)
+  }
+  if (language === 'ru' && !i18n.hasResourceBundle('ru', 'translation')) {
+    const catalog = typeof __ORCHESTRA_PLUGIN_RU__ === 'object' ? __ORCHESTRA_PLUGIN_RU__ : {}
+    i18n.addResourceBundle('ru', 'translation', catalog, true, true)
   }
   if (i18n.language !== language) {
     await i18n.changeLanguage(language).catch(() => undefined)

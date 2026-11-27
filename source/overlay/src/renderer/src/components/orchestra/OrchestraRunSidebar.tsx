@@ -58,7 +58,13 @@ export function OrchestraRunSidebar({
             )}
           >
             <p className="line-clamp-2 break-words text-sm font-medium leading-6">
-              {entry.objective}
+              {entry.id === 'run_legacy_local' &&
+              entry.objective === 'Legacy orchestration state (inspect only)'
+                ? translate(
+                    'orchestra.runSidebar.legacyTitle',
+                    'Legacy orchestration state (inspect only)'
+                  )
+                : entry.objective}
             </p>
             <p className="mt-2 truncate font-mono text-2xs text-muted-foreground">{entry.id}</p>
             {entry.legacy === 1 && (

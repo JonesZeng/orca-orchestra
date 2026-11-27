@@ -35,7 +35,7 @@ Orca names this install `joneszeng.orchestra`. To install offline, download
   resolve a decision — every write shows its target and parameters first.
 - **Remote servers.** Switch the **Host** selector between this computer and any server you have
   already saved in Orca.
-- **Native feel.** Follows Orca's light and dark themes, English and Simplified Chinese.
+- **Native feel.** Follows Orca's light and dark themes, English, Russian and Simplified Chinese.
 
 | Live DAG                                                                          | Preview before send                                                        |
 | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |

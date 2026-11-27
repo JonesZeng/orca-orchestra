@@ -85,6 +85,7 @@
       "coordinatorPlaceholder": "term_… 或会话地址",
       "heading": "运行目标 / Runs",
       "legacy": "旧版 Run · 只读",
+      "legacyTitle": "旧版编排记录（仅供查看）",
       "loadMore": "加载更多 Run",
       "coordinator": "操作身份 · 协调者句柄",
       "identityHint": "明确指定拥有此 Run 的协调者。运行时仍会校验权限；此界面不会接管旧 Run。",
